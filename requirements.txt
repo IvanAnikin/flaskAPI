@@ -2,3 +2,4 @@ flask
 boto3
 geopandas
 pandas
+psycopg2-binary 
