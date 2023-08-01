@@ -7,35 +7,22 @@ from extensions import db
 from .forms import PostForm
 from .models import Post
 
+from database.database import get_countries
+
 app = Blueprint('blog', __name__, template_folder='templates')
 
 
 @app.route("/")
 def list_posts_view():
     posts = Post.query.all()
-    return render_template('index.html', posts=posts)
+    return render_template('index.html')
 
 
-@app.route("/add/", methods=['get', 'post'])
-def add_post_view():
-    form = PostForm()
+@app.route("/get_countries")
+def list_posts_view():
+    
+    continents = request.args.get('continents')
 
-    if form.validate_on_submit():
-        try:
-            obj = Post(
-                form.title.data,
-                form.text.data)
-            db.session.add(obj)
-            db.session.commit()
-            flash('Post add successfully')
-            return redirect(url_for('blog.list_posts_view'))
-        except IntegrityError:
-            flash('There is already a post with that title. Please, try another.')
+    countries = get_countries(continents)
 
-    return render_template('blog/add_post.html', form=form)
-
-
-@app.route("/<slug>/")
-def post_view(slug):
-    post = Post.query.filter_by(slug=slug).first()
-    return render_template('blog/post.html', post=post)
+    return render_template('index.html', countries=countries)
